@@ -1,0 +1,46 @@
+#Stratégie d’indexation
+A/ Index pour Utilisateur
+
+    . Recherche ou authentification via email:
+    Pour sql:
+    SELECT * FROM utilisateur WHERE email = 'roger@example.com';
+    -> CREATE UNIQUE INDEX idx_utilisateur_email ON utilisateur(email);
+
+    . Trie des utilisateurs par nom:
+    SELECT * FROM utilisateur ORDER BY nom;
+    -> CREATE INDEX idx_utilisateur_nom ON utilisateur(nom);
+
+B/ Index pour Projet
+    . Recherche par nom du projet:
+    SELECT * FROM projet WHERE nom LIKE '%exemple%';
+   -> CREATE INDEX idx_projet_nom ON projet(nom);
+
+    . Tri par description:
+    SELECT * FROM projet WHERE description LIKE '%keyword%';
+    -> CREATE INDEX idx_projet_description ON projet(description);
+
+    . Trie par nom ou un autre champ:
+   SELECT * FROM projet ORDER BY nom ASC;
+   -> CREATE INDEX idx_projet_nom_asc ON projet(nom);
+
+C/ Index pour Tâche
+
+    . Recherche par statut pour filtrer :
+    SELECT * FROM tache WHERE statut = 'En cours';
+    -> CREATE INDEX idx_tache_statut ON tache(statut);
+
+    . Association avec un projet pour lister les tâches :
+    SELECT * FROM tache WHERE projet_id = 1;
+    -> CREATE INDEX idx_tache_projet_id ON tache(projet_id);
+
+    . Recherche de tâches par utilisateur assigné :
+    SELECT * FROM tache WHERE utilisateur_id = 2;
+    -> CREATE INDEX idx_tache_utilisateur_id ON tache(utilisateur_id);
+
+D/ Relations
+
+    . Relation Utilisateur ↔ Projet (Many-to-Many)
+    # Index sur la combinaison des IDs (utilisateur_id, projet_id) pour optimiser les jointures :
+    -> CREATE INDEX idx_utilisateur_projet_ids ON utilisateur_projet(utilisateur_id, projet_id);
+    # Index inversé sur (projet_id, utilisateur_id) pour des recherches inverses :
+    -> CREATE INDEX idx_projet_utilisateur_ids ON utilisateur_projet(projet_id, utilisateur_id);
